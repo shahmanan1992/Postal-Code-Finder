@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Postal-Code Finder</title>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<style>
+
+html, body {
+	height:100%;
+}
+
+#container {
+	margin:0;
+	padding-top:100px;
+	background-image:url("background.jpg");
+	width:100%;
+	height:100%;
+	text-align:center;
+	color:black;
+	
+}
+
+.postal {
+	border:0;
+	padding-left:20px;
+	color:black;
+	border-radius:5px;
+	width:300px;
+	height:40px;
+	border:1px solid black;
+}
+
+.submit {
+	border:0;
+	background-color:green;
+	height:40px;
+	width:150px;
+	border-radius:5px;
+	color:white;
+}
+
+#center {
+	background-color:white;
+	padding:20px;
+	border-radius:15px;
+	margin-left:25%;
+	margin-right:25%;
+}
+#fail{
+	margin-top:30px;
+	border-radius:10px;
+	border:none;
+	background-color:red;
+	color:white;
+	margin-left:10%;
+	margin-right:10%;
+	padding:20px;
+	display:none;
+	width:500px;
+}
+#result{
+	margin-top:30px;
+	border-radius:10px;
+	border:none;
+	background-color:red;
+	color:white;
+	margin-left:25%;
+	margin-right:25%;
+	padding:20px;
+	display:none;
+}
+#success{
+	margin-top:30px;
+	border-radius:10px;
+	border:none;
+	background-color:orange;
+	color:white;
+	margin-left:30%;
+	margin-right:30%;
+	padding:20px;
+	display:none;
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+
+<div id="container">
+	<div id="center">
+		<h1>Postal-Code Finder</h1>
+		<p>Enter your address below to get the postal-code</p>
+		<br /><input type="text" id="postal" name="postal" class="postal" placeholder="Eg. 18 Crittenden Way, Rochester"/><br /><br />
+		<input type="submit" id="submit" value="Find the postal-code" name="submit" class="submit" />
+	
+	<div id="result" class="alert">
+	</div>
+	<div id="fail" class="alert">
+	</div>
+	<div id="success" class="alert">
+	</div>
+	</div>
+</div>
+
+
+<script>
+	 
+		$("#submit").click(function(event) {
+			event.preventDefault();
+			$(".alert").hide();
+			if($("#postal").val()!="") {
+				var res=0;
+				$.ajax({
+				typr:"GET",
+				url:"https://maps.googleapis.com/maps/api/geocode/xml?address="+encodeURIComponent($("#postal").val())+"$key=AIzaSyAGbAtKqhu1pM5C4yzKQhQsDH1HwtVglN8",
+				dataType:"xml",
+				success:processXML,
+				error:error
+			});
+			}
+			else {
+				$("#result").html("Please enter a address.").fadeIn();
+			}
+			
+			function error() {
+				$("#result").html("Could not connect to server").fadeIn();
+			}
+			function processXML(xml) {
+				$(xml).find("address_component").each(function() {
+					if($(this).find("type").text()=="postal_code") {
+							$("#success").html("Postal-Code : "+$(this).find("long_name").text()).fadeIn();
+							res=1;
+					}
+				});
+				
+				if(res==0) {
+					$("#fail").html("Could not find postcode for that address. Please try again").fadeIn();
+				}
+			}
+			
+			
+	});
+
+</script>
+
+</body>
+</html>
+
+
+<!--if($("#postal").val()=" ") {
+				$("#result").html("Please enter correct address and try again").fadeIn();
+			}
+			-->
